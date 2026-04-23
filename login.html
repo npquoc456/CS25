@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Login Interface 1440:1024</title>
+    <style>
+        /* ================= RESET & CƠ BẢN ================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif; /* Bạn có thể đổi sang font bạn dùng */
+        }
+
+        body {
+            background-color: #eaf1f7; /* Màu nền mờ bên ngoài hệ thống */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Ngăn cuộn trang */
+        }
+
+        /* ================= KHUNG CHÍNH (WRAPPER) ================= */
+        .pos-wrapper {
+            /* Giữ đúng tỷ lệ 1440:1024 */
+            aspect-ratio: 1440 / 1024;
+            max-width: 100vw;
+            max-height: 100vh;
+            width: 100%;
+            height: auto;
+            background-color: #eaf1f7;
+            display: flex;
+            gap: 10px;  /* Khoảng cách giữa cột trái và phải */
+            padding: 2%;
+        }
+
+        /* Chia 2 cột bằng Flexbox */
+        .column {
+            flex: 1; /* Mỗi cột chiếm 50% */
+            display: flex;
+            flex-direction: column;
+            gap: 4%; /* Khoảng cách dọc giữa các khối trong cột */
+        }
+
+        /* ================= CỘT TRÁI ================= */
+        /* 1. Khối Form Đăng nhập */
+        .login-box {
+                        margin:10px;
+
+            background-color: #ffffff;
+            border-radius: 15px;
+            flex: 1.5; /* Chiếm nhiều chiều cao hơn bàn phím */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 5% 8%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            height: 25%;
+            margin-bottom: 5%;
+        }
+
+        .logo-container img {
+            max-width: 67%;
+            object-fit: contain;
+        }
+
+        /* Flexbox cho từng dòng Input */
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5%;
+            gap: 15px;
+        }
+
+        .input-group label {
+            width: 130px;
+            text-align: right;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            flex: 1; /* Input tự co giãn lấp đầy chỗ trống */
+            padding: 3% 4%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #0b5aa6;
+        }
+
+        /* Nút chức năng */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 2%;
+        }
+
+        .btn {
+            padding: 3% 10%;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-exit {
+            width: 44%;
+            background-color: #b3b3b3;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .btn-login {
+            width: 44%;
+            background-color: #0b5aa6;
+            color: white;
+            transition: 0.3s;
+        }
+
+        /* 2. Khối Bàn phím số (Sử dụng Grid để tối ưu các nút gộp) */
+        .numpad-box {
+                        margin:10px;
+
+            background-color: #bcbcbc;
+            border-radius: 15px;
+            flex: 1; /* Chiếm phần chiều cao còn lại */
+            padding: 3%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 2%;
+        }
+
+        .num-btn {
+            background-color: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .num-btn:active {
+            background-color: #e0e0e0;
+        }
+
+        .num-btn.enter {
+            background-color: #0b5aa6;
+            color: white;
+            grid-column: 4;
+            grid-row: 3 / span 2; /* Chiếm 2 hàng */
+        }
+
+        .num-btn.zero {
+            grid-column: 1 / span 3; /* Chiếm 3 cột */
+        }
+
+        .num-btn.backspace {
+            color: #0b5aa6;
+        }
+
+        .num-btn.clear {
+            font-size: 1.2rem;
+        }
+
+
+        /* ================= CỘT PHẢI ================= */
+        /* 1. Hàng Widget (Ảnh & Ngày tháng) */
+        /* ================= CỘT PHẢI ================= */
+/* 1. Hàng Widget (Ảnh & Ngày tháng) */
+.widget-row {
+                margin:10px;
+
+    display: flex;
+    gap: 4%;
+    /* Xóa height: 25% ở đây để aspect-ratio ở dưới tự quyết định chiều cao */
+    height: auto; 
+}
+
+.widget {
+                margin:10px;
+
+    flex: 1; /* Chia đều chiều rộng cho 2 widget */
+    aspect-ratio: 1 / 1; /* Ép buộc chiều cao bằng chiều rộng -> Hình vuông 100% */
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Cắt phần ảnh thừa vỡ ra khỏi bo góc */
+}
+
+.widget-image {
+    background-color: #ffffff;
+    padding: 0; /* Xóa padding để ảnh có thể tràn sát ra viền */
+}
+
+.widget-image img {
+    width: 100%;
+    height: 100%;
+    /* Dùng cover để ảnh lấp đầy toàn bộ khung hình vuông, không chừa khoảng trắng */
+    object-fit: cover; 
+}
+
+.widget-date {
+    background-color: #0b5aa6;
+    color: white;
+    flex-direction: column;
+}
+
+.widget-date .day {
+    font-size: 2rem;
+    margin-bottom: -5px;
+}
+
+.widget-date .date {
+    font-size: 6rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+        /* 2. Khối Giờ (Đen) */
+        .clock-box {
+                        margin:10px;
+
+            background-color: #000000;
+            color: white;
+            height: 20%;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 6rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+        }
+
+        /* 3. Khối Ảnh Cửa Hàng ở đáy */
+        .store-illustration {
+            flex: 1; /* Lấp đầy toàn bộ khoảng trống còn lại bên dưới */
+            display: flex;
+            justify-content: center;
+            max-height: 100%;
+        }
+
+        .store-illustration img {
+            max-width: 89%;
+            max-height: 100%;
+        }
+
+        /* Tuỳ chỉnh font size cho các màn hình cực nhỏ (nếu cần) */
+        @media (max-width: 1024px) {
+            .clock-box { font-size: 4rem; }
+            .widget-date .date { font-size: 4rem; }
+            .num-btn { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pos-wrapper">
+        
+        <div class="column">
+            <div class="login-box">
+                <div class="logo-container">
+                    <img src=".\img\logo.png" alt="CS24H Logo">
+                </div>
+                
+                <div class="input-group">
+                    <label style ="margin-right:10px;">Mã Nhân Viên</label>
+                    <input type="text" placeholder="Nhập mã nhân viên">
+                </div>
+                
+                <div class="input-group">
+                    <label style ="margin-right:10px;">Mật Khẩu</label>
+                    <input type="password" placeholder="Nhập mật khẩu ">
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-exit" style="margin: 10px;">Thoát</button>
+                    <button class="btn btn-login" style="margin: 10px;">Đăng nhập</button>
+                </div>
+            </div>
+
+            <div class="numpad-box">
+                <button class="num-btn">7</button>
+                <button class="num-btn">8</button>
+                <button class="num-btn">9</button>
+                <button class="num-btn backspace">⌫</button>
+
+                <button class="num-btn">4</button>
+                <button class="num-btn">5</button>
+                <button class="num-btn">6</button>
+                <button class="num-btn clear">Clear</button>
+
+                <button class="num-btn">1</button>
+                <button class="num-btn">2</button>
+                <button class="num-btn">3</button>
+                <button class="num-btn enter">Enter</button>
+
+                <button class="num-btn zero">0</button>
+            </div>
+        </div>
+
+        <div class="column">
+            
+            <div class="widget-row">
+                <div class="widget widget-image">
+                    <img src=".\img\lync.png" alt="Drink sketch">
+                </div>
+                <div class="widget widget-date">
+                    <span class="day">Tue</span>
+                    <span class="date">1</span>
+                </div>
+            </div>
+
+            <div class="clock-box">
+            </div>
+
+            <div class="store-illustration">
+                <img src=".\img\store.png" alt="Store illustration">
+            </div>
+
+        </div>
+
+    </div>
+<script>
+        function updateDateTime() {
+            // Lấy thời gian hiện tại của hệ thống
+            const now = new Date();
+
+            // 1. Xử lý Giờ và Phút (Thêm số 0 đằng trước nếu nhỏ hơn 10)
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+            
+            // Cập nhật vào khối Giờ
+            document.querySelector('.clock-box').textContent = timeString;
+
+            // 2. Xử lý Thứ trong tuần (Tiếng Anh viết tắt)
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayName = daysOfWeek[now.getDay()];
+            
+            // Cập nhật vào chữ "Tue"
+            document.querySelector('.widget-date .day').textContent = dayName;
+
+            // 3. Xử lý Ngày trong tháng
+            const dateNumber = now.getDate();
+            
+            // Cập nhật vào số "1"
+            document.querySelector('.widget-date .date').textContent = dateNumber;
+        }
+
+        // Gọi hàm lần đầu tiên ngay khi trang vừa tải xong để không bị delay 1 giây
+        updateDateTime();
+
+        // Thiết lập bộ đếm thời gian: Cứ mỗi 1000 milliseconds (1 giây) thì chạy lại hàm 1 lần
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Thu Ngân - 1440:1024 (Render Động & Có Giây)</title>
+    <style>
+        /* Toàn bộ CSS giữ nguyên như bản hoàn thiện trước */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #2c3338; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .pos-wrapper {
+            /* Giữ đúng tỷ lệ 1440:1024 */
+            aspect-ratio: 1440 / 1024;
+            max-width: 100vw;
+            max-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: auto;
+            background-color: #eaf1f7;
+            display: flex;
+            gap: 3%; /* Khoảng cách giữa cột trái và phải */
+            padding: 2%;
+        }
+        
+        .header { background-color: #0b5aa6; color: white; border-radius: 12px; padding: 1% 2%; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; height: 8%; }
+        .header-left { display: flex; align-items: center; gap: 20px; height: 100%;}
+        .logo-container { height: 100%; display: flex; align-items: center; background: white;  border-radius: 8px; }
+        .logo-container img { max-height: 100%; max-width: 367px; object-fit: contain; }
+        .user-info { display: flex; flex-direction: column; justify-content: center;}
+        .user-info span:first-child { font-size: 0.9rem; opacity: 0.8; }
+        .user-info span:last-child { font-weight: bold; font-size: 1.2rem; }
+        .header-right { display: flex; align-items: center; gap: 40px; }
+        .header-actions { display: flex; gap: 25px; }
+        .action-icon { display: flex; flex-direction: column; align-items: center; font-size: 0.9rem; cursor: pointer; }
+        .datetime { font-weight: bold; font-size: 1.2rem; min-width: 220px; text-align: right;} /* Mở rộng min-width để chứa thêm Giây */
+        
+        .main-container { display: flex; gap: 1.5%; flex: 1; overflow: hidden; }
+        
+        /* Panel Trái */
+        .invoice-panel { flex: 1.4; background: white; border-radius: 15px; padding: 2%; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .invoice-table { flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 2%;}
+        .grid-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr; align-items: center; text-align: center; padding: 2% 1%; }
+        .grid-row > div:first-child { text-align: left; padding-left: 10px;}
+        .table-header { background-color: #0b5aa6; color: white; border-radius: 8px; font-weight: bold; font-size: 1rem; }
+        .table-body { flex: 1; overflow-y: auto; border: 1px dashed #ccc; border-top: none; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+        .table-row { border-bottom: 1px solid #f0f0f0; font-size: 1rem;}
+        .qty-control { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .qty-btn { width: 28px; height: 28px; border: none; border-radius: 4px; background: #e0e0e0; cursor: pointer; font-weight: bold; font-size: 1.1rem;}
+        .summary-section { margin-top: auto; padding-top: 2%; font-size: 1.1rem; }
+        .summary-row { display: grid; grid-template-columns: 1fr auto 50px; padding: 1% 0; font-weight: bold; align-items: end; }
+        .summary-row .value { text-align: right; padding-right: 20px;}
+        .summary-row .currency { text-align: right; }
+        .total-row { border-top: 2px solid #333; font-size: 1.4rem; padding-top: 2%; margin-top: 1%;}
+        .invoice-actions { display: flex; gap: 2%; justify-content: flex-end; margin-top: 3%;}
+        .btn-action { padding: 3% 6%; border: none; border-radius: 8px; font-weight: bold; font-size: 1.2rem; color: white; cursor: pointer;}
+        .btn-cancel { background-color: #d32f2f; }
+        .btn-pay { background-color: #0b5aa6; }
+        
+        /* Panel Phải */
+        .product-panel { flex: 1; background: white; border-radius: 15px; padding: 2%; display: flex; flex-direction: column; gap: 3%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .search-box { display: flex; gap: 10px; align-items: center; }
+        .search-box input { flex: 1; padding: 4% 5%; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 1.1rem; }
+        .search-box input:focus { border-color: #0b5aa6; }
+        .category-filters { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; white-space: nowrap; }
+        .cat-btn { padding: 2% 4%; border: none; border-radius: 20px; background: #e0e0e0; cursor: pointer; font-size: 0.95rem; font-weight: bold; }
+        .cat-btn.active { background: #0b5aa6; color: white; }
+        
+        /* Lưới Sản Phẩm */
+        .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4%; overflow-y: auto; flex: 1; align-content: start; padding: 5px; }
+        .product-card { aspect-ratio: 1 / 1; border: 1px solid #e0e4e8; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; background: #fdfdfd; transition: transform 0.1s, box-shadow 0.2s;}
+        .product-card:hover { border-color: #0b5aa6; box-shadow: 0 5px 15px rgba(11, 90, 166, 0.2); }
+        .product-card:active { transform: scale(0.95); }
+        .product-img-container { flex: 1; padding: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .product-img-container img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+        .product-name { text-align: center; font-size: 0.95rem; font-weight: bold; padding: 6%; background: white; border-top: 1px solid #f0f0f0; pointer-events: none; }
+        .product-actions { display: flex; justify-content: space-between; gap: 3%; margin-top: auto; }
+        .product-actions button { flex: 1; padding: 4%; border-radius: 8px; border: none; font-weight: bold; font-size: 1.2rem; color: white; cursor: pointer;}
+        .btn-detail { background-color: #9e9e9e; }
+        .btn-add { background-color: #0b5aa6; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="pos-wrapper">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-container"><img src=".\img\logo.png" alt="CS24H Logo"></div>
+                <div class="user-info"><span>ID: 12345</span><span>Tên: Nô Lệ Tư Bản</span></div>
+            </div>
+            <div class="header-right">
+                <div class="header-actions">
+                    <div class="action-icon"><span>🚪</span><span>Kết ca</span></div>
+                    <div class="action-icon"><span>⚙️</span><span>Hỗ trợ</span></div>
+                </div>
+                <div class="datetime" id="live-clock">Đang tải...</div>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <div class="invoice-panel">
+                <div class="invoice-table">
+                    <div class="grid-row table-header">
+                        <div>ID - Tên SP</div>
+                        <div>Đơn giá</div>
+                        <div>Số Lượng</div>
+                        <div>Giảm giá</div>
+                        <div>Thành tiền</div>
+                    </div>
+                    <div class="table-body" id="invoice-list"></div>
+                </div>
+                <div class="summary-section">
+                    <div class="summary-row">
+                        <div>TỔNG TIỀN</div>
+                        <div class="value">0</div>
+                        <div class="currency">VNĐ</div>
+                    </div>
+                    <div class="summary-row">
+                        <div>GIẢM GIÁ</div>
+                        <div class="value">0</div>
+                        <div class="currency">VNĐ</div>
+                    </div>
+                    <div class="summary-row total-row">
+                        <div>THÀNH TIỀN</div>
+                        <div class="value" id="final-total">0</div>
+                        <div class="currency">VNĐ</div>
+                    </div>
+                </div>
+                <div class="invoice-actions">
+                    <button class="btn-action btn-cancel" onclick="clearCart()">HỦY HÓA ĐƠN</button>
+                    <button class="btn-action btn-pay">THANH TOÁN</button>
+                </div>
+            </div>
+
+            <div class="product-panel">
+                <div class="search-box">
+                    <input type="text" id="barcode-scanner" placeholder="Nhập mã vạch vào đây (VD: 123, 456)..." autofocus>
+                    <span>🔍</span>
+                </div>
+                <div class="category-filters">
+                    <button class="cat-btn active">Tất cả</button>
+                    <button class="cat-btn">Đồ ăn</button>
+                    <button class="cat-btn">Nước uống</button>
+                </div>
+
+                <div class="product-grid" id="product-grid">
+                    </div>
+
+                <div class="product-actions">
+                    <button class="btn-detail">Chi tiết</button>
+                    <button class="btn-add">Thêm</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /* ================= 1. ĐỒNG HỒ CÓ GIÂY ================= */
+        function updateDateTime() {
+            const now = new Date();
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            const dayName = days[now.getDay()];
+            const monthName = months[now.getMonth()];
+            const dateNumber = now.getDate();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const timeString = `${dayName} ${monthName} ${dateNumber} ${hours}:${minutes}:${seconds}`;
+            document.getElementById('live-clock').textContent = timeString;
+        }
+        setInterval(updateDateTime, 1000); 
+        updateDateTime();
+
+        /* ================= 2. DATABASE MẪU (Thêm trường image) ================= */
+        const productDatabase = {
+            "123": { id: "123", name: "Tài lộc quá lớn", price: 10000, image: "" },
+            "456": { id: "456", name: "Hamburger", price: 35000, image: "" },
+            "789": { id: "789", name: "Coca Cola", price: 12000, image: "" },
+            "101": { id: "101", name: "Nước suối", price: 5000, image: "" },
+            "367": { id: "367", name: "Bú sục 5 chục", price: 50000, image: "" }
+        };
+
+        /* ================= 3. RENDER TỰ ĐỘNG LƯỚI SẢN PHẨM ================= */
+        const productGrid = document.getElementById('product-grid');
+
+        function renderProducts() {
+            // Xóa sạch nội dung cũ
+            productGrid.innerHTML = '';
+            
+            // Lặp qua từng món trong database
+            Object.values(productDatabase).forEach(product => {
+                // Tạo thẻ 1 thẻ vuông mới
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.dataset.id = product.id;
+                
+                // Bơm cấu trúc HTML vào thẻ đó
+                card.innerHTML = `
+                    <div class="product-img-container"><img src="${product.image}" alt="${product.name}"></div>
+                    <div class="product-name">${product.name}</div>
+                `;
+                
+                // Nhét thẻ vừa tạo vào Lưới hiển thị trên giao diện
+                productGrid.appendChild(card);
+            });
+        }
+        
+        // Gọi hàm để hiển thị ngay khi tải trang
+        renderProducts();
+
+        /* ================= 4. LOGIC TÍNH TIỀN & THÊM XÓA ================= */
+        const invoiceList = document.getElementById('invoice-list');
+
+        function updateCartTotal() {
+            let total = 0;
+            document.querySelectorAll('.table-row').forEach(row => {
+                total += parseInt(row.dataset.price) * parseInt(row.querySelector('.item-qty').textContent);
+            });
+            document.querySelector('.summary-section .summary-row:nth-child(1) .value').textContent = total.toLocaleString('vi-VN');
+            document.getElementById('final-total').textContent = total.toLocaleString('vi-VN');
+        }
+
+        function clearCart() {
+            invoiceList.innerHTML = '';
+            updateCartTotal();
+        }
+
+        function addToInvoice(productId) {
+            const product = productDatabase[productId];
+            if (!product) { alert('Sản phẩm không có trong hệ thống!'); return; }
+
+            let existingRow = document.querySelector(`.table-row[data-id="${product.id}"]`);
+            if (existingRow) {
+                existingRow.querySelector('.btn-plus').click();
+            } else {
+                const newRow = document.createElement('div');
+                newRow.className = 'grid-row table-row';
+                newRow.dataset.id = product.id; 
+                newRow.dataset.price = product.price; 
+                newRow.innerHTML = `
+                    <div>${product.id} - ${product.name}</div>
+                    <div>${product.price.toLocaleString('vi-VN')}</div>
+                    <div class="qty-control">
+                        <button class="qty-btn btn-minus">-</button>
+                        <span class="item-qty">1</span>
+                        <button class="qty-btn btn-plus">+</button>
+                    </div>
+                    <div>0</div>
+                    <div class="item-total">${product.price.toLocaleString('vi-VN')}</div>
+                `;
+                invoiceList.insertBefore(newRow, invoiceList.firstChild);
+                updateCartTotal(); 
+            }
+        }
+
+        /* Sự kiện: Bấm nút +/- trong hóa đơn */
+        invoiceList.addEventListener('click', function(event) {
+            if (event.target.classList.contains('qty-btn')) {
+                const btn = event.target;
+                const row = btn.closest('.table-row');
+                const qtySpan = row.querySelector('.item-qty');
+                let qty = parseInt(qtySpan.textContent);
+                const price = parseInt(row.dataset.price);
+
+                if (btn.classList.contains('btn-plus')) qty++;
+                else if (btn.classList.contains('btn-minus')) qty--;
+
+                if (qty <= 0) row.remove();
+                else {
+                    qtySpan.textContent = qty;
+                    row.querySelector('.item-total').textContent = (price * qty).toLocaleString('vi-VN');
+                }
+                updateCartTotal(); 
+            }
+        });
+
+        /* Sự kiện: Quét mã vạch / Tìm kiếm */
+        const searchInput = document.getElementById('barcode-scanner');
+        searchInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const scannedCode = searchInput.value.trim();
+                addToInvoice(scannedCode);
+                searchInput.value = ''; 
+            }
+        });
+
+        /* Sự kiện: Click vào thẻ sản phẩm bất kỳ */
+        productGrid.addEventListener('click', function(event) {
+            const card = event.target.closest('.product-card');
+            if (card && card.dataset.id) {
+                addToInvoice(card.dataset.id); 
+            }
+        });
+
+    </script>
+</body>
+</html>
