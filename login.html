@@ -287,18 +287,19 @@
                 
                 <div class="input-group">
                     <label style ="margin-right:10px;">Mã Nhân Viên</label>
-                    <input type="text" placeholder="Nhập mã nhân viên">
+                    <input type="text" placeholder="Nhập mã nhân viên" id="ID"">
                 </div>
                 
                 <div class="input-group">
                     <label style ="margin-right:10px;">Mật Khẩu</label>
-                    <input type="password" placeholder="Nhập mật khẩu ">
+                    <input type="password" placeholder="Nhập mật khẩu " id = "Password">
                 </div>
 
                 <div class="action-buttons">
                     <button class="btn btn-exit" style="margin: 10px;">Thoát</button>
-                    <button class="btn btn-login" style="margin: 10px;">Đăng nhập</button>
+                    <button class="btn btn-login" style="margin: 10px;" onclick="loginchecked()" >Đăng nhập</button>
                 </div>
+                <div id="loginresult" style="text-align:center; color:red; margin-top:10px;"></div>
             </div>
 
             <div class="numpad-box">
@@ -376,6 +377,15 @@
 
         // Thiết lập bộ đếm thời gian: Cứ mỗi 1000 milliseconds (1 giây) thì chạy lại hàm 1 lần
         setInterval(updateDateTime, 1000);
+
+        function loginchecked(){
+            var getid = document.getElementById("ID").value; 
+            var getpass = document.getElementById("Password").value; 
+
+            var message = app.loginchecked(getid, getpass); 
+
+            document.getElementById("loginresult").innerHTML = message; 
+        }
     </script>
 </body>
 </html>

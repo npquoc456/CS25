@@ -2,8 +2,12 @@ package DOANJAVA;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
@@ -36,9 +40,75 @@ public class main extends Application {
      Stage stage; 
 
 
+     
      public class Bridge{
         public String getTime() {
             return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+        }
+        //lay thong tin 
+         int getid = 0; 
+         String name = null; 
+
+        public String loginchecked(String id , String password){
+             int checkid = 0; 
+             try{
+                 checkid = Integer.parseInt(id); 
+             }
+             catch( NumberFormatException e){
+                System.out.println(e.getMessage());
+                return "id or password can be incorrect"; 
+             }
+             connectDatabase db = new connectDatabase(); 
+             Connection cnt = null; 
+             PreparedStatement pstmt = null; 
+             ResultSet rs = null; 
+
+             String passcheck  = null;
+
+             String getiddb  = "select * from NHANVIEN where id = ?"; 
+
+             //getthongtn
+             
+             try {
+                cnt = db.getConnection(); 
+                if(cnt == null) {
+                    System.out.println("can not connect to database");
+                    return "database error"; 
+                }
+
+                pstmt = cnt.prepareStatement(getiddb); 
+
+                pstmt.setInt(1, checkid); 
+
+                rs = pstmt.executeQuery(); 
+
+                if(rs.next()){
+                    name = rs.getString("hoten"); 
+                    passcheck = rs.getString("mkdangnhap"); 
+                    getid = rs.getInt("id"); 
+                }
+                rs.close();
+                cnt.close();
+                pstmt.close();
+             }
+             catch(SQLException e){
+                System.out.println(e.getMessage());
+             }
+             if(passcheck != null && passcheck.equals(password)){
+                System.out.println("User " + checkid + "logined successfull!");
+                Platform.runLater(()->loadHomepage());
+                return "Login successfull"; 
+             }
+             else{
+                return "Password or ID can be incorrect"; 
+             }
+
+        }
+        public String getemployeename(){
+                return name; 
+        }  
+        public int getemployeeid(){
+            return getid; 
         }
 
      }
@@ -56,9 +126,14 @@ public class main extends Application {
                 JSObject window = (JSObject) webEngine.executeScript("window"); 
                 window.setMember("app", bridge);
             }
+            webEngine.executeScript("if (typeof getinforid ==='function') {getinforid(); }"); 
+
+             webEngine.executeScript("if (typeof getinforname ==='function') {getinforname(); }"); 
+
+
         });
 
-        loadloginpage1();
+        loadloginpage1(); 
 
         stage.setTitle("Project");
         stage.setScene( new Scene(webView , 1440, 1024));
@@ -68,6 +143,11 @@ public class main extends Application {
      public void loadloginpage1(){
          var resource = getClass().getResource("login.html"); 
          webEngine.load(resource.toExternalForm()); 
+     }
+
+     public void loadHomepage(){
+        var resource = getClass().getResource("orderPage.html"); 
+        webEngine.load(resource.toExternalForm());
      }
 
      public static void main (String[] args){

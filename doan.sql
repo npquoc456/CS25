@@ -1,5 +1,4 @@
 
-create database conveniencestore;
 use conveniencestore; 
 
 create table NHANVIEN (
@@ -93,3 +92,5 @@ alter table HOADON
 --thanhtoan 
 alter table thanhtoan 
     add constraint fk_tt_hd foreign key(hoadonid) references HOADON(id); 
+
+insert into NHANVIEN values(24521487, 'Nguyen Phu Quoc', '0365931022', 'Dong Nai', '2025-02-24', '123'); 
