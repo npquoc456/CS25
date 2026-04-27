@@ -133,7 +133,7 @@ public class main extends Application {
 
         });
 
-        loadloginpage1(); 
+        loadloginpage1();
 
         stage.setTitle("Project");
         stage.setScene( new Scene(webView , 1440, 1024));
