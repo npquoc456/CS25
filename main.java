@@ -119,7 +119,7 @@ public class main extends Application {
         WebView webView = new WebView(); 
         webEngine = webView.getEngine(); 
 
-        Bridge bridge = new Bridge(); 
+        Bridge bridge = new Bridge();  
 
         webEngine.getLoadWorker().stateProperty().addListener((obs, obstate, newstate) ->{
             if(newstate == Worker.State.SUCCEEDED){
